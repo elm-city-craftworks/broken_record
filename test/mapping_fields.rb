@@ -9,6 +9,7 @@ describe "Mapping fields in results" do
    
     BrokenRecord.database.execute %{
       create table articles ( 
+        id    integer primary key,
         title text,
         body  text
       );
@@ -20,16 +21,17 @@ describe "Mapping fields in results" do
                 ["Article 2", "Falls mainly in the plains"]]
 
     articles.each do |pair|
-      BrokenRecord.database.execute("insert into articles values (?, ?)", pair) 
+      BrokenRecord.database.execute("insert into articles values (null, ?, ?)", pair) 
     end
 
     article_model = Class.new do
       include BrokenRecord::Mapping
 
-      define_map :articles do 
-        fields do
-          text :title
-          text :body
+      define_table :articles do 
+        columns do
+          integer :id
+          text    :title
+          text    :body
         end
       end
     end
@@ -50,51 +52,74 @@ module BrokenRecord
   end
 
   class RowBuilder
-    def initialize
-      @fields = []
+    def initialize(record_class)
+      @record_class = record_class
+      @fields       = []
     end
 
     def text(name)
       @fields << name
     end
 
-    def to_struct
-      Struct.new(*@fields)
+    def integer(name)
+      @fields << name
+    end
+
+    def build_row(row_data)
+      @record_class.new(Hash[@fields.zip(row_data)])
     end
   end
 
-  class Mapper
-    def initialize(table_name, &block)
+  class Table
+    def initialize(record_class, table_name, &block)
       @table_name  = table_name
-      @row_builder = RowBuilder.new
+      @row_builder = RowBuilder.new(record_class)
 
       SimpleDelegator.new(self).instance_eval(&block)
     end
 
-    def fields(&block)
+    def columns(&block)
       SimpleDelegator.new(@row_builder).instance_eval(&block)
     end
 
     def all
       BrokenRecord.database.query( "select * from #{@table_name}" ) do |results|
-        struct = @row_builder.to_struct
-        return results.map { |r| struct.new(*r) }
+        return results.map { |r| @row_builder.build_row(r) }
       end
+    end
+  end
+
+  class Row
+    def initialize(params)
+      @data = Struct.new(*params.keys.map(&:to_sym)).new(*params.values)
+    end
+
+    def method_missing(m, *a, &b)
+      @data.public_send(m, *a, &b)
     end
   end
   
   module Mapping
+    def initialize(params)
+      @__row__ = Row.new(params)
+    end
+
+    # FIXME: I wanted to use public_send but may have run into a Ruby bug
+    def method_missing(m, *a, &b)
+      @__row__.public_send(m, *a, &b)
+    end
+
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
-      def define_map(table_name, &block)
-        @__mapper__ = Mapper.new(table_name, &block)
+      def define_table(table_name, &block)
+        @__table__ = Table.new(self, table_name, &block)
       end
 
       def all
-        @__mapper__.all
+        @__table__.all
       end
     end
   end
