@@ -14,7 +14,7 @@ module BrokenRecord
 
     module ClassMethods
       def define_table(table_name, &block)
-        @__table__ = Table.new(self, table_name, &block)
+        @__table__ = RecordTable.new(self, table_name, &block)
       end
 
       def method_missing(m, *a, &b)

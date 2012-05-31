@@ -1,5 +1,5 @@
 module BrokenRecord
-  class Table
+  class RecordTable
     def initialize(record_class, table_name, &block)
       @table_name  = table_name
       @row_builder = RowBuilder.new(record_class)
