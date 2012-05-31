@@ -1,7 +1,7 @@
 module BrokenRecord
   module Mapping
     def initialize(table, params)
-      @__row__   = Row.new(table, params)
+      @__row__ = Row.new(table, params)
     end
 
     def method_missing(m, *a, &b)

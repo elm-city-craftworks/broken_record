@@ -11,6 +11,23 @@ module BrokenRecord
       SimpleDelegator.new(@row_builder).instance_eval(&block)
     end
 
+    def create(params)
+      escapes = params.count.times.map { "?" }.join(", ") 
+      fields  = params.keys.join(", ")
+
+      BrokenRecord.database.execute(
+        "insert into #{@table_name} (#{fields}) values (#{escapes})",
+        params.values
+      )
+    end
+
+    def destroy(id)
+      BrokenRecord.database.execute(
+        "delete from #{@table_name} where id = ?",
+        [id]
+      )
+    end
+
     def update(id, params)
       # FIXME: This is probably not secure
       sql = params.map { |k,v| "#{k} = #{v.inspect}" }.join(", ")
@@ -23,16 +40,14 @@ module BrokenRecord
     end
 
     def all
-      BrokenRecord.database.query( "select * from #{@table_name}" ) do |results|
-        return results.map { |r| @row_builder.build_row(self, r) }
-      end
+      BrokenRecord.database.execute( "select * from #{@table_name}" )
+                           .map { |r| @row_builder.build_row(self, r) }
     end
 
     # FIXME: Blech!
     def find(id)
-      BrokenRecord.database.query( "select * from #{@table_name} where id = ?", [id] ) do |results|
-        return results.map { |r| @row_builder.build_row(self, r) }.first
-      end
+      BrokenRecord.database.execute( "select * from #{@table_name} where id = ?", [id] )
+                           .map { |r| @row_builder.build_row(self, r) }.first
     end
   end
 end

@@ -19,10 +19,6 @@ describe "Mapping fields in results" do
     @articles = [["Article 1", "The rain in Spain"],
                 ["Article 2", "Falls mainly in the plains"]]
 
-    @articles.each do |pair|
-      BrokenRecord.database.execute("insert into articles values (null, ?, ?)", pair) 
-    end
-
     @article_model = Class.new do
       include BrokenRecord::Mapping
 
@@ -33,6 +29,10 @@ describe "Mapping fields in results" do
           text    :body
         end
       end
+    end
+
+    @articles.each do |title, body|
+      @article_model.create(:title => title, :body => body)
     end
   end
 
@@ -52,6 +52,12 @@ describe "Mapping fields in results" do
     article.save
 
     @article_model.find(1).title.must_equal(article.title)
+  end
+
+  it "must allow destroying records" do
+    @article_model.find(1).wont_be_nil
+    @article_model.destroy(1)
+    @article_model.find(1).must_be_nil
   end
 
   after do
