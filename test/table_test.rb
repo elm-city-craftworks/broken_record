@@ -17,10 +17,6 @@ describe BrokenRecord::Table do
     }
   end
 
-  it "must be able to determine the table's primary key" do
-    table.primary_key.must_equal(:id)
-  end
-
   it "must be able to retrieve column information" do
     columns = table.columns
 
@@ -42,6 +38,28 @@ describe BrokenRecord::Table do
     record[:id].must_equal(1)
     record[:title].must_equal(params[:title])
     record[:body].must_equal(params[:body])
+  end
+
+  it "must be able to delete rows" do
+    params = { :title => "Article 1", 
+               :body  => "The rain in spain" }
+
+    id = table.insert(params)
+    table.delete(:id => id)
+
+    table.where(:id => id).must_be_empty
+  end
+
+  it "must be able to update rows" do
+    params = { :title => "Article 1", 
+               :body  => "The rain in spain" }
+
+    id = table.insert(params)
+   
+    table.update(:where   => { :id    => id },
+                 :fields  => { :body  => "Falls mainly on the plains" }) 
+
+    table.where(:id => id).first[:body].must_equal("Falls mainly on the plains")
   end
 
   after do
