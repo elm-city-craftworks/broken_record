@@ -1,19 +1,33 @@
 module BrokenRecord
   class Row
-    def initialize(table, params)
-      @table = table
-      @data  = Struct.new(*params.keys.map(&:to_sym)).new(*params.values)
+    def initialize(params)
+      @table  = params.fetch(:table)
+      @key    = params.fetch(:key, nil)
+      @fields = params.fetch(:fields, {})
+
+      @data  = Struct.new(*@table.columns.keys).new
+
+      @fields.each do |k,v|
+        @data[k] = v
+      end
     end
 
     def save
-      params = Hash[@data.each_pair.to_a]
-      id     = params.delete(:id)
+      fields = Hash[@data.members.zip(@data.values)]
 
-      @table.update(id, params)
+      if @key
+        # FIXME: should use primary key from Table
+        @table.update(:where  => { :id => @key },
+                      :fields => fields)
+      else
+        @table.insert(fields)
+      end
     end
 
     def method_missing(m, *a, &b)
-      @data.public_send(m, *a, &b)
+      return super unless @table.columns.key?(m[/(.*?)=?\z/,1].to_sym)
+      
+      @data.send(m, *a, &b)
     end
   end
 end
