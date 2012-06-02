@@ -17,6 +17,10 @@ describe BrokenRecord::Table do
     }
   end
 
+  it "must be able to determine primary key" do
+    table.primary_key.must_equal(:id)
+  end
+
   it "must be able to retrieve column information" do
     columns = table.columns
 

@@ -16,8 +16,7 @@ module BrokenRecord
       fields = Hash[@data.members.zip(@data.values)]
 
       if @key
-        # FIXME: should use primary key from Table
-        @table.update(:where  => { :id => @key },
+        @table.update(:where  => { @table.primary_key => @key },
                       :fields => fields)
       else
         @table.insert(fields)
@@ -25,9 +24,17 @@ module BrokenRecord
     end
 
     def destroy
-      @table.delete(:id => @key)
+      @table.delete(@table.primary_key => @key)
     end
 
+    # NOTE: I could potentially replace this with composite if it allowed for
+    # finer grain control of when methods get dispatched. 
+    #
+    # Perhaps I want something like this:
+    #
+    #   features.append(@data) { |m, a, &b| @table.columns.key?(...) }
+    #
+    # But I'll leave this as a problem for later.
     def method_missing(m, *a, &b)
       return super unless @table.columns.key?(m[/(.*?)=?\z/,1].to_sym)
       

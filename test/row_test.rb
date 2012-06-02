@@ -11,6 +11,7 @@ describe BrokenRecord::Row do
 
     mock = MiniTest::Mock.new
     mock.expect(:columns, columns)
+    mock.expect(:primary_key, :id)
 
     mock
   end
@@ -31,18 +32,18 @@ describe BrokenRecord::Row do
     row.title = "Article 1"
     row.body  = "An amazing article"
 
-    insert_params = { :id    => nil, 
-                      :title => "Article 1",
-                      :body  => "An amazing article" }
+    insert_params = { table.primary_key => nil, 
+                      :title            => "Article 1",
+                      :body             => "An amazing article" }
     
     table.expect(:insert, 1, [insert_params])
     row.save
   end
 
   it "must be able to update an existing database record" do
-    original_fields = { :id    => 1,
-                        :title => "Article 1",
-                        :body  => "An amazing article" }
+    original_fields = { table.primary_key => 1,
+                        :title            => "Article 1",
+                        :body             => "An amazing article" }
 
     row = BrokenRecord::Row.new(:table  => table, 
                                 :key    => 1,
@@ -50,18 +51,13 @@ describe BrokenRecord::Row do
 
     row.body = "An updated article"
 
-    update_params = { :id    => 1,
-                      :title => "Article 1",
-                      :body  => "An updated article" }
+    update_params = { table.primary_key => 1,
+                      :title            => "Article 1",
+                      :body             => "An updated article" }
 
-    table.expect(:update, nil, [{ :where  => { :id => 1 },
+    table.expect(:update, nil, [{ :where  => { table.primary_key => 1 },
                                   :fields => update_params}])
 
     row.save
-  end
-
-
-  after do
-  #  table.verify
   end
 end

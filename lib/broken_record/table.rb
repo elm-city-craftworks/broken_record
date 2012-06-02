@@ -8,7 +8,7 @@ module BrokenRecord
       parse_table_info
     end
 
-    attr_reader :columns
+    attr_reader :columns, :primary_key
 
     def insert(params)
       raise unless params.keys.all? { |e| columns.key?(e) }
@@ -81,6 +81,9 @@ module BrokenRecord
 
       raw_data.each do |column|
         column_name = column[1].to_sym
+
+        self.primary_key = column_name if column[-1] == 1
+
         columns[column[1].to_sym] = { :type => column[2] }
       end
     end

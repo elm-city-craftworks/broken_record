@@ -14,19 +14,17 @@ module BrokenRecord
     end
 
     def find(id)
-      fields = @table.where(:id => id).first
+      fields = @table.where(@table.primary_key => id).first
 
       return nil unless fields
 
-      # FIXME: USE PRIMARY KEY
       @record_class.new(:table => @table,
                        :fields => fields,
                        :key    => id)
     end
 
     def destroy(id)
-      # FIXME: USE PRIMARY KEY
-      @table.delete(:id => id)
+      @table.delete(@table.primary_key => id)
     end
 
     def all
@@ -34,7 +32,7 @@ module BrokenRecord
       @table.all.map do |e| 
         @record_class.new(:table  => @table,
                           :fields => e,
-                          :key    => e[:id])
+                          :key    => e[@table.primary_key])
       end
     end
   end
