@@ -1,24 +1,23 @@
+require_relative "composable"
+
 module BrokenRecord
   module Mapping
-    def initialize(table, params)
-      @__row__ = Row.new(table, params)
-    end
+    include Composable
 
-    def method_missing(m, *a, &b)
-      @__row__.public_send(m, *a, &b)
+    def initialize(params)
+      features << Row.new(params)
     end
 
     def self.included(base)
+      base.extend(Composable)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
-      def define_table(table_name, &block)
-        @__table__ = RecordTable.new(self, table_name, &block)
-      end
-
-      def method_missing(m, *a, &b)
-        @__table__.public_send(m, *a, &b)
+      def map_to_table(table_name)
+        features << TableMapper.new(:name         => table_name,
+                                    :db           => BrokenRecord.database,
+                                    :record_class => self)
       end
     end
   end

@@ -24,6 +24,10 @@ module BrokenRecord
       end
     end
 
+    def destroy
+      @table.delete(:id => @key)
+    end
+
     def method_missing(m, *a, &b)
       return super unless @table.columns.key?(m[/(.*?)=?\z/,1].to_sym)
       

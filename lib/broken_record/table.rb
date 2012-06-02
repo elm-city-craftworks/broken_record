@@ -17,7 +17,7 @@ module BrokenRecord
       bind_vars   = (["?"] * params.count).join(", ")
 
       @db.execute %{
-        insert into #{@db.class.quote(@name)} (#{field_names})
+        insert into #{@name} (#{field_names})
         values (#{bind_vars})
       }, params.values
 
@@ -50,6 +50,12 @@ module BrokenRecord
         select * from #{@name}
         where #{conds}
       }, params.values
+
+      raw_data.map { |row| Hash[columns.keys.zip(row)] }
+    end
+
+    def all
+      raw_data = @db.execute %{ select * from #{@name} }
 
       raw_data.map { |row| Hash[columns.keys.zip(row)] }
     end

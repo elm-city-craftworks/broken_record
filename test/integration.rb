@@ -1,5 +1,4 @@
 require "minitest/autorun"
-require "delegate"
 require "sqlite3"
 
 require_relative "../lib/broken_record"
@@ -21,14 +20,8 @@ describe "Mapping fields in results" do
 
     @article_model = Class.new do
       include BrokenRecord::Mapping
-
-      define_table :articles do 
-        columns do
-          integer :id
-          text    :title
-          text    :body
-        end
-      end
+      
+      map_to_table :articles
     end
 
     @articles.each do |title, body|
@@ -44,7 +37,6 @@ describe "Mapping fields in results" do
     article = @article_model.find(1)
 
     article.title = "Changed Title"
-
     article.title.must_equal("Changed Title")
 
     @article_model.find(1).title.wont_equal(article.title)
