@@ -4,12 +4,21 @@ module BrokenRecord
   class TableMapper
     include Composable
 
-    class CRUD
-      def initialize(params)
-        @table = Table.new(:name => params.fetch(:name),
-                           :db   => BrokenRecord.database)
+    def initialize(params)
+      mapper       = Struct.new(:table, :record_class).new
 
-        @record_class = params.fetch(:record_class)
+      mapper.table = Table.new(:name => params.fetch(:name),
+                               :db   => BrokenRecord.database)
+
+      mapper.record_class = params.fetch(:record_class)
+
+      features << CRUD.new(mapper) << Associations.new(mapper)
+    end
+
+    class CRUD
+      def initialize(mapper)
+        @table        = mapper.table
+        @record_class = mapper.record_class
       end
 
       def create(params)
@@ -43,7 +52,6 @@ module BrokenRecord
       end
 
       def all
-        # FIXME: USE PRIMARY KEY
         @table.all.map do |e| 
           @record_class.new(:table  => @table,
                             :fields => e,
@@ -53,11 +61,8 @@ module BrokenRecord
     end
 
     class Associations
-      def initialize(params)
-        @table = Table.new(:name => params.fetch(:name),
-                            :db   => BrokenRecord.database)
-
-        @record_class = params.fetch(:record_class)
+      def initialize(mapper)
+        @record_class = mapper.record_class
       end
 
       def belongs_to(parent, params)
@@ -72,10 +77,6 @@ module BrokenRecord
                 .where(params[:key] => send(table.primary_key))
         end
       end
-    end
-
-    def initialize(params)
-      features << CRUD.new(params) << Associations.new(params)
     end
   end
 end

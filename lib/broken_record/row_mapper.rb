@@ -1,5 +1,5 @@
 module BrokenRecord
-  class Row
+  class RowMapper
     def initialize(params)
       @table  = params.fetch(:table)
       @key    = params.fetch(:key, nil)

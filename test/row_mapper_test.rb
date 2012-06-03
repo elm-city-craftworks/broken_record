@@ -1,9 +1,9 @@
 require "minitest/autorun"
 require "ostruct"
 
-require_relative "../lib/broken_record/row"
+require_relative "../lib/broken_record/row_mapper"
 
-describe BrokenRecord::Row do
+describe BrokenRecord::RowMapper do
   let(:table) do
     columns = { :id    => { :type => "integer" },
                 :title => { :type => "text"    },
@@ -17,7 +17,7 @@ describe BrokenRecord::Row do
   end
 
   it "must be able to convert fields into accessors" do
-    row = BrokenRecord::Row.new(:table => table)
+    row = BrokenRecord::RowMapper.new(:table => table)
 
     row.title = "Article 1"
     row.body  = "An amazing article"
@@ -27,7 +27,7 @@ describe BrokenRecord::Row do
   end
 
   it "must be able to create a new database record" do
-    row = BrokenRecord::Row.new(:table => table)
+    row = BrokenRecord::RowMapper.new(:table => table)
 
     row.title = "Article 1"
     row.body  = "An amazing article"
@@ -45,7 +45,7 @@ describe BrokenRecord::Row do
                         :title            => "Article 1",
                         :body             => "An amazing article" }
 
-    row = BrokenRecord::Row.new(:table  => table, 
+    row = BrokenRecord::RowMapper.new(:table  => table, 
                                 :key    => 1,
                                 :fields => original_fields)
 

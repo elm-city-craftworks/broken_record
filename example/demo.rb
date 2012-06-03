@@ -8,7 +8,6 @@ class Article
   has_many :comments, :key   => :article_id, 
                       :class => "Comment"
 
-
   def published?
     status == "published"
   end
