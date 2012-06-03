@@ -12,6 +12,8 @@ module BrokenRecord
       end
     end
 
+    attr_reader :table
+
     def save
       fields = Hash[@data.members.zip(@data.values)]
 

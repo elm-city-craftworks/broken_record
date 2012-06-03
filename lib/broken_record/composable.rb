@@ -23,6 +23,8 @@ module BrokenRecord
       else
         @tail = self.class.new(@tail, obj)
       end
+
+      self
     end
 
     def >>(obj)
@@ -35,6 +37,8 @@ module BrokenRecord
         @tail = self.class.new(@head, @tail)
         @head = obj
       end
+
+      self
     end
 
     def method_missing(m, *a, &b)
