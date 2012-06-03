@@ -11,6 +11,10 @@ class Article
   def published?
     status == "published"
   end
+
+  def valid?
+    ["draft", "published"].include?(status)
+  end
 end
 
 

@@ -5,76 +5,119 @@ module BrokenRecord
     include Composable
 
     def initialize(params)
-      mapper       = Struct.new(:table, :record_class).new
+      @table = Table.new(:name => params.fetch(:name),
+                         :db   => BrokenRecord.database)
 
-      mapper.table = Table.new(:name => params.fetch(:name),
-                               :db   => BrokenRecord.database)
+      @record_class = params.fetch(:record_class)
 
-      mapper.record_class = params.fetch(:record_class)
+      features << CRUD.new(self) << Associations.new(self)
+    end
 
-      features << CRUD.new(mapper) << Associations.new(mapper)
+    attr_reader :table, :record_class
+
+    def column_names
+      @table.columns.keys
+    end
+
+    def primary_key
+      @table.primary_key
     end
 
     class CRUD
       def initialize(mapper)
-        @table        = mapper.table
-        @record_class = mapper.record_class
+        @mapper       = mapper
       end
 
       def create(params)
-        id = @table.insert(params)    
+        raise unless record_class.new(:mapper => mapper,
+                                      :fields => params).valid?
+
+        id = table.insert(params)    
       
         find(id)
       end
 
+      def update(id, params)
+        raise unless record_class.new(:mapper => mapper,
+                                      :fields => params,
+                                      :key    => id).valid?
+
+        table.update(:where  => { table.primary_key => id },
+                     :fields => params)
+      end
+
       def find(id)
-        fields = @table.where(@table.primary_key => id).first
+        fields = table.where(table.primary_key => id).first
 
         return nil unless fields
 
-        @record_class.new(:table => @table,
+        record_class.new(:mapper => mapper,
                          :fields => fields,
                          :key    => id)
       end
 
       def where(params)
-        rows = @table.where(params)
+        rows = table.where(params)
 
         rows.map do |fields|
-          @record_class.new(:table  => @table,
-                            :fields => fields,
-                            :key    => fields[@table.primary_key])
+          record_class.new(:mapper  => mapper,
+                           :fields  => fields,
+                           :key     => fields[table.primary_key])
         end
       end
 
       def destroy(id)
-        @table.delete(@table.primary_key => id)
+        table.delete(table.primary_key => id)
       end
 
       def all
-        @table.all.map do |e| 
-          @record_class.new(:table  => @table,
-                            :fields => e,
-                            :key    => e[@table.primary_key])
+        table.all.map do |e| 
+          record_class.new(:mapper  => mapper,
+                           :fields  => e,
+                           :key     => e[table.primary_key])
         end
+      end
+
+      private
+
+      attr_reader :mapper
+
+      def table
+        mapper.table
+      end
+
+      def record_class
+        mapper.record_class
       end
     end
 
     class Associations
       def initialize(mapper)
-        @record_class = mapper.record_class
+        @mapper = mapper
       end
 
       def belongs_to(parent, params)
-        @record_class.send(:define_method, parent) do
+        @mapper.record_class.send(:define_method, parent) do
           Object.const_get(params[:class]).find(send(params[:key]))
         end
       end
 
       def has_many(children, params)
-        @record_class.send(:define_method, children) do
+        table_primary_key = @mapper.primary_key
+
+        @mapper.record_class.send(:define_method, children) do
           Object.const_get(params[:class])
-                .where(params[:key] => send(table.primary_key))
+                .where(params[:key] => send(table_primary_key))
+        end
+      end
+
+      def has_one(child, params)
+        table_primary_key = @mapper.primary_key
+
+        @mapper.record_class.send(:define_method, child) do
+          Object.const_get(params[:class])
+                .where(params[:key] => send(table_primary_key))
+                .first
         end
       end
     end

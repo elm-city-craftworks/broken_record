@@ -1,46 +1,43 @@
+require_relative "composable"
+
 module BrokenRecord
   class RowMapper
     def initialize(params)
-      @table  = params.fetch(:table)
+      extend Composable
+
       @key    = params.fetch(:key, nil)
-      @fields = params.fetch(:fields, {})
+      @mapper = params.fetch(:mapper)
 
-      @data  = Struct.new(*@table.columns.keys).new
-
-      @fields.each do |k,v|
-        @data[k] = v
-      end
+      build_accessors(params.fetch(:fields, {}))
     end
 
-    attr_reader :table
-
     def save
-      fields = Hash[@data.members.zip(@data.values)]
+      fields = Hash[members.zip(values)]
 
       if @key
-        @table.update(:where  => { @table.primary_key => @key },
-                      :fields => fields)
+        @mapper.update(@key, fields)
       else
-        @table.insert(fields)
+        @mapper.create(fields)
       end
     end
 
     def destroy
-      @table.delete(@table.primary_key => @key)
+      @mapper.destroy(@key)
     end
 
-    # NOTE: I could potentially replace this with composite if it allowed for
-    # finer grain control of when methods get dispatched. 
-    #
-    # Perhaps I want something like this:
-    #
-    #   features.append(@data) { |m, a, &b| @table.columns.key?(...) }
-    #
-    # But I'll leave this as a problem for later.
-    def method_missing(m, *a, &b)
-      return super unless @table.columns.key?(m[/(.*?)=?\z/,1].to_sym)
-      
-      @data.send(m, *a, &b)
+    # override this!
+    def valid?
+      true
+    end
+
+    private
+
+    def build_accessors(fields)
+      data  = Struct.new(*@mapper.column_names).new
+
+      fields.each { |k,v| data[k] = v }
+
+      features << data
     end
   end
 end
