@@ -9,15 +9,17 @@ module BrokenRecord
     end
 
     def self.included(base)
-      base.extend Module.new {
-        include Composable
+      base.extend(ClassMethods)
+    end
 
-        def map_to_table(table_name)
-          features << TableMapper.new(:name         => table_name,
-                                      :db           => BrokenRecord.database,
-                                      :record_class => self)
-        end
-      }
+    module ClassMethods
+      include Composable
+
+      def map_to_table(table_name)
+        features << TableMapper.new(:name         => table_name,
+                                    :db           => BrokenRecord.database,
+                                    :record_class => self)
+      end
     end
   end
 end
