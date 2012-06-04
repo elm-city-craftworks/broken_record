@@ -4,51 +4,42 @@ module BrokenRecord
       @__features__ ||= Composite.new
     end
 
+    def respond_to?(m)
+      features.respond_to?(m) || super
+    end
+
     def method_missing(m, *a, &b)
-      features.public_send(m, *a, &b)
+      features.dispatch(m, *a, &b)
     end
   end
 
   class Composite 
-    def initialize(head=nil, tail=nil)
-      @head = head
-      @tail = tail
+    def initialize
+      @components = []
     end
 
     def <<(obj)
-      if @head.nil?
-        @head = obj
-      elsif @tail.nil?
-        @tail = obj
-      else
-        @tail = self.class.new(@tail, obj)
-      end
-
-      self
+      components.push(obj)
     end
 
     def >>(obj)
-      if @head.nil?
-        @head = obj
-      elsif @tail.nil?
-        @tail = @head
-        @head = obj
-      else
-        @tail = self.class.new(@head, @tail)
-        @head = obj
+      components.shift(obj)
+    end
+
+    def respond_to?(m)
+      components.any? { |c| c.respond_to?(m) } || super
+    end
+
+    def dispatch(m, *a, &b)
+      components.each do |c|
+        return c.public_send(m, *a, &b) if c.respond_to?(m)
       end
 
-      self
+      raise NoMethodError, "No compenent implements #{m}"
     end
 
-    def method_missing(m, *a, &b)
-      return super unless @head
+    private
 
-      @head.public_send(m, *a, &b)
-    rescue NoMethodError
-      return super unless @tail
-
-      @tail.public_send(m, *a, &b)
-    end
+    attr_reader :components
   end
 end
