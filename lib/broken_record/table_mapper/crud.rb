@@ -2,7 +2,7 @@ module BrokenRecord
   class TableMapper
     class CRUD
       def initialize(mapper)
-        @mapper       = mapper
+        self.mapper = mapper
       end
 
       def create(fields)
@@ -57,7 +57,7 @@ module BrokenRecord
 
       private
 
-      attr_reader :mapper
+      attr_accessor :mapper
 
       def table
         mapper.table

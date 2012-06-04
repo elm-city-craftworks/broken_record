@@ -7,10 +7,10 @@ module BrokenRecord
     include Composable
 
     def initialize(params)
-      @table = Table.new(:name => params.fetch(:name),
-                         :db   => BrokenRecord.database)
+      self.table = Table.new(:name => params.fetch(:name),
+                             :db   => BrokenRecord.database)
 
-      @record_class = params.fetch(:record_class)
+      self.record_class = params.fetch(:record_class)
 
       features << CRUD.new(self) << Associations.new(self)
     end
@@ -18,11 +18,15 @@ module BrokenRecord
     attr_reader :table, :record_class
 
     def column_names
-      @table.columns.keys
+      table.columns.keys
     end
 
     def primary_key
-      @table.primary_key
+      table.primary_key
     end
+
+    private
+
+    attr_writer :table, :record_class
   end
 end

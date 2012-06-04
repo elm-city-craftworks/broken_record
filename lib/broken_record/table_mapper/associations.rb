@@ -2,7 +2,7 @@ module BrokenRecord
   class TableMapper
     class Associations
       def initialize(mapper)
-        @mapper = mapper
+        self.mapper = mapper
       end
 
       def belongs_to(parent, params)
@@ -12,7 +12,7 @@ module BrokenRecord
       end
 
       def has_many(children, params)
-        table_primary_key = @mapper.primary_key
+        table_primary_key = mapper.primary_key
 
         mapper.record_class.send(:define_method, children) do
           Object.const_get(params[:class])
@@ -21,7 +21,7 @@ module BrokenRecord
       end
 
       def has_one(child, params)
-        table_primary_key = @mapper.primary_key
+        table_primary_key = mapper.primary_key
 
         mapper.record_class.send(:define_method, child) do
           Object.const_get(params[:class])
@@ -32,7 +32,7 @@ module BrokenRecord
 
       private
 
-      attr_reader :mapper
+      attr_accessor :mapper
     end
   end
 end

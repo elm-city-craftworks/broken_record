@@ -1,9 +1,9 @@
 module BrokenRecord
   class Table
     def initialize(params)
-      @name        = params.fetch(:name)
-      @db          = params.fetch(:db)
-      @columns     = {}
+      self.name        = params.fetch(:name)
+      self.db          = params.fetch(:db)
+      self.columns     = {}
 
       parse_table_info
     end
@@ -55,8 +55,8 @@ module BrokenRecord
 
     private
 
-    attr_reader :db
-    attr_writer :primary_key
+    attr_accessor :db
+    attr_writer :primary_key, :name, :columns
 
     def bind_vars(params, separator)
       raise unless params.keys.all? { |e| columns.key?(e) }
@@ -65,7 +65,7 @@ module BrokenRecord
     end
 
     def parse_table_info
-      raw_data = @db.execute("PRAGMA table_info(#{name})")
+      raw_data = db.execute("PRAGMA table_info(#{name})")
 
       raw_data.each do |column|
         column_name = column[1].to_sym

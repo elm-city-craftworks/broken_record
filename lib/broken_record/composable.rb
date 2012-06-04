@@ -15,7 +15,7 @@ module BrokenRecord
 
   class Composite 
     def initialize
-      @components = []
+      self.components = []
     end
 
     def <<(obj)
@@ -40,6 +40,6 @@ module BrokenRecord
 
     private
 
-    attr_reader :components
+    attr_accessor :components
   end
 end
