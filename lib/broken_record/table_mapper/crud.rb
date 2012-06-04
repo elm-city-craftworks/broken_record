@@ -5,22 +5,22 @@ module BrokenRecord
         @mapper       = mapper
       end
 
-      def create(params)
+      def create(fields)
         raise unless record_class.new(:mapper => mapper,
-                                      :fields => params).valid?
+                                      :fields => fields).valid?
 
-        id = table.insert(params)    
+        id = table.insert(fields)    
       
         find(id)
       end
 
-      def update(id, params)
+      def update(id, fields)
         raise unless record_class.new(:mapper => mapper,
-                                      :fields => params,
+                                      :fields => fields,
                                       :key    => id).valid?
 
         table.update(:where  => { table.primary_key => id },
-                     :fields => params)
+                     :fields => fields)
       end
 
       def find(id)
@@ -48,10 +48,10 @@ module BrokenRecord
       end
 
       def all
-        table.all.map do |e| 
+        table.all.map do |fields| 
           record_class.new(:mapper  => mapper,
-                           :fields  => e,
-                           :key     => e[table.primary_key])
+                           :fields  => fields,
+                           :key     => fields[table.primary_key])
         end
       end
 
