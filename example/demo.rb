@@ -33,6 +33,7 @@ article = Article.create(:title  => "First Article",
                          :body   => "The Rain in Spain",
                          :status => "draft")
 
+
 c = Comment.create(:body => "YAY", :article_id => 1)
 c2 = Comment.create(:body => "YAYZ", :article_id => 1)
 

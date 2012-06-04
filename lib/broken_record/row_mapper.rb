@@ -1,4 +1,5 @@
 require_relative "composable"
+require_relative "row"
 
 module BrokenRecord
   class RowMapper
@@ -8,16 +9,17 @@ module BrokenRecord
       @key    = params.fetch(:key, nil)
       @mapper = params.fetch(:mapper)
 
-      build_accessors(params.fetch(:fields, {}))
+      @row    = Row.new(:values       => params.fetch(:fields, {}),
+                        :column_names => @mapper.column_names)
+
+      features << @row
     end
 
     def save
-      fields = Hash[members.zip(values)]
-
       if @key
-        @mapper.update(@key, fields)
+        @mapper.update(@key, @row.to_hash)
       else
-        @mapper.create(fields)
+        @mapper.create(@row.to_hash)
       end
     end
 
@@ -28,16 +30,6 @@ module BrokenRecord
     # override this!
     def valid?
       true
-    end
-
-    private
-
-    def build_accessors(fields)
-      data  = Struct.new(*@mapper.column_names).new
-
-      fields.each { |k,v| data[k] = v }
-
-      features << data
     end
   end
 end
