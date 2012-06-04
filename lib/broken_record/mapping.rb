@@ -2,9 +2,9 @@ require_relative "composable"
 
 module BrokenRecord
   module Mapping
-    def initialize(params)
-      extend Composable
+    include Composable
 
+    def initialize(params)
       features << RowMapper.new(params)
     end
 
@@ -13,9 +13,9 @@ module BrokenRecord
     end
 
     module ClassMethods
-      def map_to_table(table_name)
-        extend Composable
+      include Composable
 
+      def map_to_table(table_name)
         features << TableMapper.new(:name         => table_name,
                                     :db           => BrokenRecord.database,
                                     :record_class => self)
