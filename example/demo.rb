@@ -29,12 +29,37 @@ end
 
 
 
-article = Article.create(:title  => "First Article",
-                         :body   => "The Rain in Spain",
-                         :status => "draft")
+Article.create(:title  => "A great articles",
+               :body   => "The Rain in Spain",
+               :status => "draft")
 
 
-c = Comment.create(:body => "YAY", :article_id => 1)
-c2 = Comment.create(:body => "YAYZ", :article_id => 1)
+Comment.create(:body => "A first comment",  :article_id => 1)
+Comment.create(:body => "A second comment", :article_id => 1)
 
-p article.comments.map(&:body)
+
+article = Article.find(1)
+
+puts "#{article.title} -- #{article.comments.count} comments"
+puts article.comments.map { |e| "  * #{e.body}" }.join("\n")
+
+print "This article is: "
+puts article.published? ? "Published!" : "Not Yet Published!"
+
+puts "\n\nAFTER SOME CHANGES:\n\n"
+
+# after some changes...
+
+article.comments.last.destroy
+
+Comment.create(:body => "A third comment", :article_id => 1)
+Comment.create(:body => "A fourth comment", :article_id => 1)
+
+article.status = "published"
+article.save
+
+puts "#{article.title} -- #{article.comments.count} comments"
+puts article.comments.map { |e| "  * #{e.body}" }.join("\n")
+
+print "This article is: "
+puts article.published? ? "Published!" : "Not Yet Published!"
