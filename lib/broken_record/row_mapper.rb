@@ -3,9 +3,9 @@ require_relative "row"
 
 module BrokenRecord
   class RowMapper
-    def initialize(params)
-      extend Composable
+    include Composable
 
+    def initialize(params)
       self.key    = params.fetch(:key, nil)
       self.mapper = params.fetch(:mapper)
 
