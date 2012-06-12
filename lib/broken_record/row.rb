@@ -4,7 +4,7 @@ module BrokenRecord
       self.data = {}
 
       column_names = params.fetch(:column_names)
-      values       = params.fetch(:values)
+      values       = params.fetch(:values, {})
 
       column_names.each { |name| data[name] = values[name] }
 
