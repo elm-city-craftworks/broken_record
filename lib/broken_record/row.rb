@@ -4,7 +4,7 @@ module BrokenRecord
       self.data = {}
 
       column_names = params.fetch(:column_names)
-      values       = params.fetch(:values, {})
+      values       = deep_copy(params.fetch(:values, {}))
 
       column_names.each { |name| data[name] = values[name] }
 
@@ -12,12 +12,16 @@ module BrokenRecord
     end
 
     def to_hash
-      Marshal.load(Marshal.dump(data))
+      deep_copy(data)
     end
 
     private
 
     attr_accessor :data
+
+    def deep_copy(object)
+      Marshal.load(Marshal.dump(object))
+    end
 
     def build_accessors(column_names)
       column_names.each do |name|
