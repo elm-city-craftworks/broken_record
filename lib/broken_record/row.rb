@@ -21,11 +21,8 @@ module BrokenRecord
 
     def build_accessors(column_names)
       column_names.each do |name|
-        singleton_class.send(:define_method, name) { data[name] }
-
-        singleton_class.send(:define_method, "#{name}=") do |v| 
-          data[name] = v
-        end
+        define_singleton_method(name) { data[name] }
+        define_singleton_method("#{name}=") { |v| data[name] = v }
       end
     end
   end
