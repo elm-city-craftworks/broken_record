@@ -1,5 +1,5 @@
 module BrokenRecord
-  class TableMapper
+  class Relation
     class CRUD
       def initialize(mapper)
         self.mapper = mapper

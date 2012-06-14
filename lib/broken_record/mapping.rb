@@ -16,9 +16,9 @@ module BrokenRecord
       include Composable
 
       def map_to_table(table_name)
-        features << TableMapper.new(:name         => table_name,
-                                    :db           => BrokenRecord.database,
-                                    :record_class => self)
+        features << Relation.new(:name         => table_name,
+                                 :db           => BrokenRecord.database,
+                                 :record_class => self)
       end
     end
   end

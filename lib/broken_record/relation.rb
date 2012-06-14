@@ -1,9 +1,9 @@
 require_relative "composable"
-require_relative "table_mapper/crud"
-require_relative "table_mapper/associations"
+require_relative "relation/crud"
+require_relative "relation/associations"
 
 module BrokenRecord
-  class TableMapper
+  class Relation
     include Composable
 
     def initialize(params)
