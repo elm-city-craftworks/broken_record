@@ -32,7 +32,7 @@ module BrokenRecord
 
     private
 
-    attr_accessor :mapper, :key, :row
+    attr_accessor :mapper, :key
 
   end
 end
