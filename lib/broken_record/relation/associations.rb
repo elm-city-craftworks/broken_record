@@ -25,8 +25,8 @@ module BrokenRecord
         table_primary_key = mapper.primary_key
 
         define_association(child) do
-          BrokenRecord.string_to_constant(params[:class]).
-            where(params[:key] => send(table_primary_key)).first
+          BrokenRecord.string_to_constant(params[:class])
+            .where(params[:key] => send(table_primary_key)).first
         end
       end
 
