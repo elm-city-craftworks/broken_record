@@ -1,6 +1,6 @@
 require_relative "composable"
-require_relative "relation/crud"
-require_relative "relation/associations"
+require_relative "table_mapper/crud"
+require_relative "table_mapper/associations"
 
 module BrokenRecord
   class Relation

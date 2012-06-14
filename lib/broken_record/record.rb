@@ -1,16 +1,16 @@
 require_relative "composable"
-require_relative "row"
+require_relative "field_set"
 
 module BrokenRecord
-  class RowMapper
+  class Record
     include Composable
 
     def initialize(params)
       self.key      = params.fetch(:key, nil)
       self.relation = params.fetch(:relation)
 
-      features << Row.new(:values       => params.fetch(:fields, {}),
-                          :column_names => relation.column_names)
+      features << FieldSet.new(:values     => params.fetch(:fields, {}),
+                               :attributes => relation.attributes)
     end
 
     def save

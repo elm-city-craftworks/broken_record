@@ -1,19 +1,19 @@
 require "minitest/autorun"
 require "ostruct"
 
-require_relative "../lib/broken_record/row_mapper"
+require_relative "../lib/broken_record/record"
 
-describe BrokenRecord::RowMapper do
+describe BrokenRecord::Record do
   let(:relation) do
     mock = MiniTest::Mock.new
-    mock.expect(:column_names, [:id, :title, :body])
+    mock.expect(:attributes, [:id, :title, :body])
     mock.expect(:primary_key, :id)
 
     mock
   end
 
   it "must be able to convert fields into accessors" do
-    row = BrokenRecord::RowMapper.new(:relation => relation)
+    row = BrokenRecord::Record.new(:relation => relation)
 
     row.title = "Article 1"
     row.body  = "An amazing article"
@@ -23,7 +23,7 @@ describe BrokenRecord::RowMapper do
   end
 
   it "must be able to create a new database record" do
-    row = BrokenRecord::RowMapper.new(:relation => relation)
+    row = BrokenRecord::Record.new(:relation => relation)
 
     row.title = "Article 1"
     row.body  = "An amazing article"
@@ -41,7 +41,7 @@ describe BrokenRecord::RowMapper do
                         :title            => "Article 1",
                         :body             => "An amazing article" }
 
-    row = BrokenRecord::RowMapper.new(:relation => relation, 
+    row = BrokenRecord::Record.new(:relation => relation, 
                                       :key    => 1,
                                       :fields => original_fields)
 

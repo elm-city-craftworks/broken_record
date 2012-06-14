@@ -5,7 +5,7 @@ module BrokenRecord
     include Composable
 
     def initialize(params)
-      features << RowMapper.new(params)
+      features << Record.new(params)
     end
 
     def self.included(base)

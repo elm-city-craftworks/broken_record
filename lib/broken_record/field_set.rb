@@ -1,14 +1,14 @@
 module BrokenRecord
-  class Row
+  class FieldSet
     def initialize(params)
       self.data = {}
 
-      column_names = params.fetch(:column_names)
-      values       = deep_copy(params.fetch(:values, {}))
+      attributes  = params.fetch(:attributes)
+      values      = deep_copy(params.fetch(:values, {}))
 
-      column_names.each { |name| data[name] = values[name] }
+      attributes.each { |name| data[name] = values[name] }
 
-      build_accessors(column_names)
+      build_accessors(attributes)
     end
 
     def to_hash
@@ -23,8 +23,8 @@ module BrokenRecord
       Marshal.load(Marshal.dump(object))
     end
 
-    def build_accessors(column_names)
-      column_names.each do |name|
+    def build_accessors(attributes)
+      attributes.each do |name|
         define_singleton_method(name) { data[name] }
         define_singleton_method("#{name}=") { |v| data[name] = v }
       end
