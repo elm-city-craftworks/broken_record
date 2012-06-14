@@ -9,7 +9,7 @@ module BrokenRecord
       self.key      = params.fetch(:key, nil)
       self.relation = params.fetch(:relation)
 
-      features << FieldSet.new(:values     => params.fetch(:fields, {}),
+      features << FieldSet.new(:values     => params.fetch(:values, {}),
                                :attributes => relation.attributes)
     end
 

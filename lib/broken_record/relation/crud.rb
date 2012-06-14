@@ -5,41 +5,41 @@ module BrokenRecord
         self.relation = relation
       end
 
-      def create(fields)
+      def create(values)
         raise unless record_class.new(:relation => relation,
-                                      :fields => fields).valid?
+                                      :values => values).valid?
 
-        id = table.insert(fields)    
+        id = table.insert(values)    
       
         find(id)
       end
 
-      def update(id, fields)
+      def update(id, values)
         raise unless record_class.new(:relation => relation,
-                                      :fields   => fields,
+                                      :values   => values,
                                       :key      => id).valid?
 
         table.update(:where  => { table.primary_key => id },
-                     :fields => fields)
+                     :fields => values)
       end
 
       def find(id)
-        fields = table.where(table.primary_key => id).first
+        values = table.where(table.primary_key => id).first
 
-        return nil unless fields
+        return nil unless values
 
         record_class.new(:relation => relation,
-                         :fields   => fields,
+                         :values   => values,
                          :key      => id)
       end
 
       def where(params)
         rows = table.where(params)
 
-        rows.map do |fields|
+        rows.map do |values|
           record_class.new(:relation  => relation,
-                           :fields    => fields,
-                           :key       => fields[table.primary_key])
+                           :values    => values,
+                           :key       => values[table.primary_key])
         end
       end
 
@@ -48,10 +48,10 @@ module BrokenRecord
       end
 
       def all
-        table.all.map do |fields| 
+        table.all.map do |values| 
           record_class.new(:relation  => relation,
-                           :fields    => fields,
-                           :key       => fields[table.primary_key])
+                           :values    => values,
+                           :key       => values[table.primary_key])
         end
       end
 

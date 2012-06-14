@@ -37,13 +37,13 @@ describe BrokenRecord::Record do
   end
 
   it "must be able to update an existing database record" do
-    original_fields = { :id               => 1,
+    original_values = { :id               => 1,
                         :title            => "Article 1",
                         :body             => "An amazing article" }
 
     row = BrokenRecord::Record.new(:relation => relation, 
                                       :key    => 1,
-                                      :fields => original_fields)
+                                      :values => original_values)
 
     row.body = "An updated article"
 
