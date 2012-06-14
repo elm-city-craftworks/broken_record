@@ -4,7 +4,7 @@ require "ostruct"
 require_relative "../lib/broken_record/row_mapper"
 
 describe BrokenRecord::RowMapper do
-  let(:mapper) do
+  let(:relation) do
     mock = MiniTest::Mock.new
     mock.expect(:column_names, [:id, :title, :body])
     mock.expect(:primary_key, :id)
@@ -13,7 +13,7 @@ describe BrokenRecord::RowMapper do
   end
 
   it "must be able to convert fields into accessors" do
-    row = BrokenRecord::RowMapper.new(:mapper => mapper)
+    row = BrokenRecord::RowMapper.new(:relation => relation)
 
     row.title = "Article 1"
     row.body  = "An amazing article"
@@ -23,7 +23,7 @@ describe BrokenRecord::RowMapper do
   end
 
   it "must be able to create a new database record" do
-    row = BrokenRecord::RowMapper.new(:mapper => mapper)
+    row = BrokenRecord::RowMapper.new(:relation => relation)
 
     row.title = "Article 1"
     row.body  = "An amazing article"
@@ -32,7 +32,7 @@ describe BrokenRecord::RowMapper do
                       :title            => "Article 1",
                       :body             => "An amazing article" }
     
-    mapper.expect(:create, Object, [insert_params])
+    relation.expect(:create, Object, [insert_params])
     row.save
   end
 
@@ -41,7 +41,7 @@ describe BrokenRecord::RowMapper do
                         :title            => "Article 1",
                         :body             => "An amazing article" }
 
-    row = BrokenRecord::RowMapper.new(:mapper => mapper, 
+    row = BrokenRecord::RowMapper.new(:relation => relation, 
                                       :key    => 1,
                                       :fields => original_fields)
 
@@ -51,7 +51,7 @@ describe BrokenRecord::RowMapper do
                       :title            => "Article 1",
                       :body             => "An updated article" }
 
-    mapper.expect(:update, Object, [1, update_params])
+    relation.expect(:update, Object, [1, update_params])
 
     row.save
   end

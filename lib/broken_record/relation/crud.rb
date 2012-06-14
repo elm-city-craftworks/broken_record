@@ -1,12 +1,12 @@
 module BrokenRecord
   class Relation
     class CRUD
-      def initialize(mapper)
-        self.mapper = mapper
+      def initialize(relation)
+        self.relation = relation
       end
 
       def create(fields)
-        raise unless record_class.new(:mapper => mapper,
+        raise unless record_class.new(:relation => relation,
                                       :fields => fields).valid?
 
         id = table.insert(fields)    
@@ -15,9 +15,9 @@ module BrokenRecord
       end
 
       def update(id, fields)
-        raise unless record_class.new(:mapper => mapper,
-                                      :fields => fields,
-                                      :key    => id).valid?
+        raise unless record_class.new(:relation => relation,
+                                      :fields   => fields,
+                                      :key      => id).valid?
 
         table.update(:where  => { table.primary_key => id },
                      :fields => fields)
@@ -28,18 +28,18 @@ module BrokenRecord
 
         return nil unless fields
 
-        record_class.new(:mapper => mapper,
-                         :fields => fields,
-                         :key    => id)
+        record_class.new(:relation => relation,
+                         :fields   => fields,
+                         :key      => id)
       end
 
       def where(params)
         rows = table.where(params)
 
         rows.map do |fields|
-          record_class.new(:mapper  => mapper,
-                           :fields  => fields,
-                           :key     => fields[table.primary_key])
+          record_class.new(:relation  => relation,
+                           :fields    => fields,
+                           :key       => fields[table.primary_key])
         end
       end
 
@@ -49,22 +49,22 @@ module BrokenRecord
 
       def all
         table.all.map do |fields| 
-          record_class.new(:mapper  => mapper,
-                           :fields  => fields,
-                           :key     => fields[table.primary_key])
+          record_class.new(:relation  => relation,
+                           :fields    => fields,
+                           :key       => fields[table.primary_key])
         end
       end
 
       private
 
-      attr_accessor :mapper
+      attr_accessor :relation
 
       def table
-        mapper.table
+        relation.table
       end
 
       def record_class
-        mapper.record_class
+        relation.record_class
       end
     end
   end

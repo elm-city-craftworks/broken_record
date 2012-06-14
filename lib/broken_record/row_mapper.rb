@@ -6,23 +6,23 @@ module BrokenRecord
     include Composable
 
     def initialize(params)
-      self.key    = params.fetch(:key, nil)
-      self.mapper = params.fetch(:mapper)
+      self.key      = params.fetch(:key, nil)
+      self.relation = params.fetch(:relation)
 
       features << Row.new(:values       => params.fetch(:fields, {}),
-                          :column_names => @mapper.column_names)
+                          :column_names => relation.column_names)
     end
 
     def save
       if key
-        mapper.update(key, to_hash)
+        relation.update(key, to_hash)
       else
-        mapper.create(to_hash)
+        relation.create(to_hash)
       end
     end
 
     def destroy
-      mapper.destroy(key)
+      relation.destroy(key)
     end
 
     # override this!
@@ -32,7 +32,6 @@ module BrokenRecord
 
     private
 
-    attr_accessor :mapper, :key
-
+    attr_accessor :relation, :key
   end
 end
