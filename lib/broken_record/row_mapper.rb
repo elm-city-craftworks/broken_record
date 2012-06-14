@@ -9,17 +9,15 @@ module BrokenRecord
       self.key    = params.fetch(:key, nil)
       self.mapper = params.fetch(:mapper)
 
-      self.row    = Row.new(:values       => params.fetch(:fields, {}),
-                            :column_names => @mapper.column_names)
-
-      features << row
+      features << Row.new(:values       => params.fetch(:fields, {}),
+                          :column_names => @mapper.column_names)
     end
 
     def save
       if key
-        mapper.update(key, row.to_hash)
+        mapper.update(key, to_hash)
       else
-        mapper.create(row.to_hash)
+        mapper.create(to_hash)
       end
     end
 
