@@ -6,19 +6,12 @@ module BrokenRecord
       end
 
       def create(values)
-        raise unless record_class.new(:relation => relation,
-                                      :values => values).valid?
-
         id = table.insert(values)    
       
         find(id)
       end
 
       def update(id, values)
-        raise unless record_class.new(:relation => relation,
-                                      :values   => values,
-                                      :key      => id).valid?
-
         table.update(:where  => { table.primary_key => id },
                      :fields => values)
       end

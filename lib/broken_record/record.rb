@@ -25,11 +25,6 @@ module BrokenRecord
       relation.destroy(key)
     end
 
-    # override this!
-    def valid?
-      true
-    end
-
     private
 
     attr_accessor :relation, :key
