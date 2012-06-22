@@ -5,7 +5,7 @@ module BrokenRecord
     end
 
     def respond_to_missing?(m, _)
-      features.respond_to?(m)
+      features.receives?(m)
     end
 
     def method_missing(m, *a, &b)
@@ -15,31 +15,35 @@ module BrokenRecord
 
   class Composite 
     def initialize
-      self.components = []
+      self.receivers = []
     end
 
     def <<(obj)
-      components.push(obj)
+      receivers.push(obj)
     end
 
     def >>(obj)
-      components.shift(obj)
+      receivers.shift(obj)
     end
 
-    def respond_to?(m)
-      components.any? { |c| c.respond_to?(m) } || super
+    def receives?(m)
+      !!receiver(m)
     end
 
     def dispatch(m, *a, &b)
-      components.each do |c|
-        return c.public_send(m, *a, &b) if c.respond_to?(m)
-      end
+      obj = receiver(m)
 
-      raise NoMethodError, "No compenent implements #{m}"
+      raise NoMethodError, "No compenent implements #{m}" unless obj
+
+      obj.send(m, *a, &b)
     end
 
     private
 
-    attr_accessor :components
+    def receiver(m)
+      receivers.find { |c| c.respond_to?(m) }
+    end
+
+    attr_accessor :receivers
   end
 end
