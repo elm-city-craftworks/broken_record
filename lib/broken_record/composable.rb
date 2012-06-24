@@ -4,7 +4,7 @@ module BrokenRecord
       @__features__ ||= Composite.new
     end
 
-    def respond_to_missing?(m, _)
+    def respond_to_missing?(m, *a)
       features.receives?(m)
     end
 
