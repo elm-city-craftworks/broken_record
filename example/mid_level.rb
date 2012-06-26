@@ -2,13 +2,28 @@ require_relative "helper"
 
 class Article
   def initialize(params)
-    @params = params
+    @fieldset = BrokenRecord::FieldSet.new(
+      :values     => params[:values],
+      :attributes => params[:relation].attributes
+    )
   end
 
   def to_s
-    "TITLE: #{@params[:values][:title]}\n"+
-    "BODY:  #{@params[:values][:body]}"
+    "TITLE: #{title}\n"+
+    "BODY:  #{body}"
   end
+
+  def respond_to_missing?(m, *a)
+    fieldset.respond_to?(m)
+  end
+
+  def method_missing(m, *a, &b)
+    fieldset.send(m, *a, &b)
+  end
+
+  private
+
+  attr_reader :fieldset
 end
 
 # a factory for record objects that interacts with Table

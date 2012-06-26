@@ -21,18 +21,14 @@ module BrokenRecord
 
         return nil unless values
 
-        record_class.new(:relation => relation,
-                         :values   => values,
-                         :key      => id)
+        relation.new_record(values)
       end
 
       def where(params)
         rows = table.where(params)
 
         rows.map do |values|
-          record_class.new(:relation  => relation,
-                           :values    => values,
-                           :key       => values[table.primary_key])
+          relation.new_record(values)
         end
       end
 
@@ -41,11 +37,7 @@ module BrokenRecord
       end
 
       def all
-        table.all.map do |values| 
-          record_class.new(:relation  => relation,
-                           :values    => values,
-                           :key       => values[table.primary_key])
-        end
+        table.all.map { |values| relation.new_record(values) }
       end
 
       private
@@ -54,10 +46,6 @@ module BrokenRecord
 
       def table
         relation.table
-      end
-
-      def record_class
-        relation.record_class
       end
     end
   end
