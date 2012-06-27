@@ -8,7 +8,7 @@ module BrokenRecord
 
     def initialize(params)
       self.table = Table.new(:name => params.fetch(:name),
-                             :db   => BrokenRecord.database)
+                             :db   => params.fetch(:db))
 
       self.record_class = params.fetch(:record_class)
 
