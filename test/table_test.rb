@@ -11,8 +11,9 @@ describe BrokenRecord::Table do
    database.execute %{
       create table articles ( 
         id    integer primary key,
-        title text,
-        body  text
+        title  text,
+        body   text,
+        status text
       );
     }
   end
@@ -24,16 +25,18 @@ describe BrokenRecord::Table do
   it "must be able to retrieve column information" do
     columns = table.columns
 
-    columns.count.must_equal(3)
+    columns.count.must_equal(4)
 
     columns[:id][:type].must_equal("integer")
     columns[:title][:type].must_equal("text")
     columns[:body][:type].must_equal("text")
+    columns[:status][:type].must_equal("text")
   end
 
   it "must be able to create and retrieve row data" do
-    params = { :title => "Article 1", 
-               :body  => "The rain in spain" }
+    params = { :title  => "Article 1", 
+               :body   => "The rain in spain",
+               :status => "published"}
 
     id = table.insert(params)
 
@@ -42,11 +45,13 @@ describe BrokenRecord::Table do
     record[:id].must_equal(1)
     record[:title].must_equal(params[:title])
     record[:body].must_equal(params[:body])
+    record[:status].must_equal(params[:status])
   end
 
   it "must be able to delete rows" do
-    params = { :title => "Article 1", 
-               :body  => "The rain in spain" }
+    params = { :title  => "Article 1", 
+               :body   => "The rain in spain",
+               :status => "published" }
 
     id = table.insert(params)
     table.delete(:id => id)
@@ -55,8 +60,9 @@ describe BrokenRecord::Table do
   end
 
   it "must be able to update rows" do
-    params = { :title => "Article 1", 
-               :body  => "The rain in spain" }
+    params = { :title  => "Article 1", 
+               :body   => "The rain in spain",
+               :status => "publshed" }
 
     id = table.insert(params)
    
@@ -64,6 +70,24 @@ describe BrokenRecord::Table do
                  :fields  => { :body  => "Falls mainly on the plains" }) 
 
     table.where(:id => id).first[:body].must_equal("Falls mainly on the plains")
+  end
+
+  it "must be able to filter rows with a simple query" do
+    table.insert(:title  => "Article 1", 
+                 :body   => "The rain in Spain",
+                 :status => "draft")
+
+    table.insert(:title  => "Article 2", 
+                 :body   => "Falls mainly on the plains",
+                 :status => "published")
+
+    table.insert(:title  => "Article 3", 
+                 :body   => "Oh that rain in Spain!",
+                 :status => "published")
+
+
+    table.where(:status => "draft").count.must_equal(1)
+    table.where(:status => "published").count.must_equal(2)
   end
 
   after do

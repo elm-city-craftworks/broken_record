@@ -22,10 +22,6 @@ module BrokenRecord
       receivers.push(obj)
     end
 
-    def >>(obj)
-      receivers.shift(obj)
-    end
-
     def receives?(m)
       !!receiver(m)
     end

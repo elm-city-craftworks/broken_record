@@ -55,4 +55,13 @@ describe BrokenRecord::Record do
 
     row.save
   end
+
+  it "must be able to destroy a database record" do
+    row = BrokenRecord::Record.new(:relation => relation,
+                                   :key      => 1)
+    
+    relation.expect(:destroy, Object, [1])
+
+    row.destroy
+  end
 end

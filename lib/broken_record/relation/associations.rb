@@ -21,15 +21,6 @@ module BrokenRecord
         end
       end
 
-      def has_one(child, params)
-        table_primary_key = relation.table.primary_key
-
-        relation.define_record_method(child) do
-          BrokenRecord.string_to_constant(params[:class])
-            .where(params[:key] => send(table_primary_key)).first
-        end
-      end
-
       attr_accessor :relation
     end
   end
