@@ -13,6 +13,7 @@ idea for a number of reasons, but is worth investigating.
 To run the examples for this program, do the following:
 
 1) Run `bundle` or manually install the `sqlite3` gem
+
 2) Run any example in the examples/ folder
 
 Broken Record itself does not have a hard dependency on the sqlite3 gem, but
