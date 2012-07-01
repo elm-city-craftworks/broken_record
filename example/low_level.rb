@@ -10,29 +10,20 @@ comments = BrokenRecord::Table.new(:name => "comments",
 
 ## create an article with some positive comments
 
-a1_id = articles.insert(:title => "A great article",
-                        :body  => "Short but sweet")
+a1 = articles.insert(:title => "A great article", 
+                     :body  => "Short but sweet")
 
-comments.insert(:body       => "Supportive comment!",
-                :article_id => a1_id)
-
-comments.insert(:body       => "Friendly comment!",
-                :article_id => a1_id)
-
+comments.insert(:body => "Supportive comment!", :article_id => a1)
+comments.insert(:body => "Friendly comment!",   :article_id => a1)
 
 ## create an article with some negative comments
 
-a2_id = articles.insert(:title => "A not so great article",
-                        :body  => "Just as short")
+a2 = articles.insert(:title => "A not so great article", 
+                     :body  => "Just as short")
 
-comments.insert(:body       => "Angry comment!",
-                :article_id => a2_id)
-
-comments.insert(:body       => "Frustrated comment!",
-                :article_id => a2_id)
-
-comments.insert(:body       => "Irritated comment!",
-                :article_id => a2_id)
+comments.insert(:body => "Angry comment!",      :article_id => a2)
+comments.insert(:body => "Frustrated comment!", :article_id => a2)
+comments.insert(:body => "Irritated comment!",  :article_id => a2)
 
 ## Display the articles and their comments
 
