@@ -1,9 +1,9 @@
-require_relative "composable"
+require "mozart"
 require_relative "field_set"
 
 module BrokenRecord
   class Record
-    include Composable
+    include Mozart::Composable
 
     def initialize(params)
       self.key      = params.fetch(:key, nil)

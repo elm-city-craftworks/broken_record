@@ -1,10 +1,10 @@
-require_relative "composable"
+require "mozart"
 require_relative "relation/crud"
 require_relative "relation/associations"
 
 module BrokenRecord
   class Relation
-    include Composable
+    include Mozart::Composable
 
     def initialize(params)
       self.table = Table.new(:name => params.fetch(:name),

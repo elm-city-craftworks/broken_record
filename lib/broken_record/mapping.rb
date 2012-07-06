@@ -1,8 +1,8 @@
-require_relative "composable"
+require "mozart"
 
 module BrokenRecord
   module Mapping
-    include Composable
+    include Mozart::Composable
 
     def initialize(params)
       features << Record.new(params)
@@ -13,7 +13,7 @@ module BrokenRecord
     end
 
     module ClassMethods
-      include Composable
+      include Mozart::Composable
 
       def map_to_table(table_name)
         features << Relation.new(:name         => table_name,
