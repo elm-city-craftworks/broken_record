@@ -4,18 +4,20 @@ require_relative "relation/associations"
 
 module BrokenRecord
   class Relation
-    include Mozart::Composable
+    include Mozart::Environment
 
     def initialize(params)
-      self.table = Table.new(:name => params.fetch(:name),
-                             :db   => params.fetch(:db))
+      _(:table, Table.new(:name => params.fetch(:name),
+                          :db   => params.fetch(:db)))
 
-      self.record_class = params.fetch(:record_class)
+      _(:record_class, params.fetch(:record_class))
 
       features << CRUD.new(self) << Associations.new(self)
     end
 
-    attr_reader :table
+    def table
+      _(:table)
+    end
 
     def attributes
       table.columns.keys
@@ -33,7 +35,8 @@ module BrokenRecord
 
     private
 
-    attr_reader :record_class
-    attr_writer :table, :record_class
+    def record_class
+      _(:record_class)
+    end
   end
 end

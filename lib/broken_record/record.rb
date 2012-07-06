@@ -18,14 +18,21 @@ module BrokenRecord
 
     def save
       if key
-        _(:relation).update(key, to_hash)
+        relation.update(key, to_hash)
       else
-        _(:relation).create(to_hash)
+        relation.create(to_hash)
       end
     end
 
     def destroy
-      _(:relation).destroy(key)
+      relation.destroy(key)
     end
+
+    private
+
+    def relation
+      _(:relation)
+    end
+
   end
 end

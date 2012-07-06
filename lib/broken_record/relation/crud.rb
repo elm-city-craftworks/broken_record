@@ -1,8 +1,12 @@
+require "mozart"
+
 module BrokenRecord
   class Relation
     class CRUD
+      include Mozart::SingleAssignment
+
       def initialize(relation)
-        self.relation = relation
+        _(:relation, relation)
       end
 
       def create(values)
@@ -42,7 +46,9 @@ module BrokenRecord
 
       private
 
-      attr_accessor :relation
+      def relation
+        _(:relation)
+      end
 
       def table
         relation.table

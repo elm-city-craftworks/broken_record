@@ -1,8 +1,12 @@
+require "mozart"
+
 module BrokenRecord
   class Relation
     class Associations
+      include Mozart::SingleAssignment
+
       def initialize(relation)
-        self.relation = relation
+        _(:relation, relation)
       end
 
       def belongs_to(parent, params)
@@ -21,7 +25,11 @@ module BrokenRecord
         end
       end
 
-      attr_accessor :relation
+      private
+
+      def relation
+        _(:relation)
+      end
     end
   end
 end

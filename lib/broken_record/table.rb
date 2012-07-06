@@ -1,14 +1,28 @@
+require "mozart"
+
 module BrokenRecord
   class Table
+    include Mozart::SingleAssignment
+
     def initialize(params)
-      self.name        = params.fetch(:name)
-      self.db          = params.fetch(:db)
-      self.columns     = {}
+      _(:name,    params.fetch(:name))
+      _(:db,      params.fetch(:db)  )
+      _(:columns, {}                 )
 
       parse_table_info
     end
 
-    attr_reader :columns, :primary_key, :name
+    def columns
+      _(:columns)
+    end
+
+    def primary_key
+      _(:primary_key)
+    end
+
+    def name
+      _(:name)
+    end
 
     def insert(params)
       raise unless params.keys.all? { |e| columns.key?(e) }
@@ -55,8 +69,9 @@ module BrokenRecord
 
     private
 
-    attr_accessor :db
-    attr_writer :primary_key, :name, :columns
+    def db
+      _(:db)
+    end
 
     def bind_vars(params, separator)
       raise unless params.keys.all? { |e| columns.key?(e) }
@@ -70,7 +85,7 @@ module BrokenRecord
       raw_data.each do |column|
         column_name = column[1].to_sym
 
-        self.primary_key = column_name if column[-1] == 1
+        _(:primary_key, column_name) if column[-1] == 1
 
         columns[column[1].to_sym] = { :type => column[2] }
       end
