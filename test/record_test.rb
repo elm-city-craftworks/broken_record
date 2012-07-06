@@ -28,8 +28,7 @@ describe BrokenRecord::Record do
     row.title = "Article 1"
     row.body  = "An amazing article"
 
-    insert_params = { :id               => nil,
-                      :title            => "Article 1",
+    insert_params = { :title            => "Article 1",
                       :body             => "An amazing article" }
     
     relation.expect(:create, Object, [insert_params])

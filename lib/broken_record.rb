@@ -1,4 +1,3 @@
-require_relative "broken_record/field_set"
 require_relative "broken_record/table"
 require_relative "broken_record/record"
 require_relative "broken_record/relation"

@@ -1,32 +1,31 @@
 require "mozart"
-require_relative "field_set"
 
 module BrokenRecord
   class Record
-    include Mozart::Composable
+    include Mozart::Environment
 
     def initialize(params)
-      self.key      = params.fetch(:key, nil)
-      self.relation = params.fetch(:relation)
+      _(:key,      params.fetch(:key, nil))
+      _(:relation, params.fetch(:relation))
 
-      features << FieldSet.new(:values     => params.fetch(:values, {}),
-                               :attributes => relation.attributes)
+      values = params.fetch(:values, {})
+      features << Mozart.value(*_(:relation).attributes).new(values)
+    end
+
+    def key
+      _(:key)
     end
 
     def save
       if key
-        relation.update(key, to_hash)
+        _(:relation).update(key, to_hash)
       else
-        relation.create(to_hash)
+        _(:relation).create(to_hash)
       end
     end
 
     def destroy
-      relation.destroy(key)
+      _(:relation).destroy(key)
     end
-
-    private
-
-    attr_accessor :relation, :key
   end
 end
