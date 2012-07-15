@@ -7,7 +7,6 @@ describe BrokenRecord::Record do
   let(:relation) do
     mock = MiniTest::Mock.new
     mock.expect(:attributes, [:id, :title, :body])
-    mock.expect(:primary_key, :id)
 
     mock
   end
@@ -42,8 +41,8 @@ describe BrokenRecord::Record do
                         :body             => "An amazing article" }
 
     row = BrokenRecord::Record.new(:relation => relation, 
-                                      :key    => 1,
-                                      :values => original_values)
+                                   :key    => 1,
+                                   :values => original_values)
 
     row.body = "An updated article"
 
@@ -63,5 +62,9 @@ describe BrokenRecord::Record do
     relation.expect(:destroy, Object, [1])
 
     row.destroy
+  end
+
+  after do
+    relation.verify
   end
 end
