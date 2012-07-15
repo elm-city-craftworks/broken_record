@@ -1,5 +1,4 @@
 require "minitest/autorun"
-require "ostruct"
 
 require_relative "../lib/broken_record/record"
 
