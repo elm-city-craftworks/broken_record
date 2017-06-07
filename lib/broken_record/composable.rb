@@ -13,7 +13,7 @@ module BrokenRecord
     end
   end
 
-  class Composite 
+  class Composite
     def initialize
       self.receivers = []
     end
@@ -29,7 +29,7 @@ module BrokenRecord
     def dispatch(m, *a, &b)
       obj = receiver(m)
 
-      raise NoMethodError, "No compenent implements #{m}" unless obj
+      raise NoMethodError, "No component implements #{m}" unless obj
 
       obj.send(m, *a, &b)
     end
